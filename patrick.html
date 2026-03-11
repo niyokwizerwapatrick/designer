@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rwanda TV Live Portal</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0a0f22;
+  color:white;
+  text-align:center;
+}
+h1{
+  padding:15px;
+  color:#00eaff;
+  text-shadow:0 0 10px #00eaff;
+}
+.channels{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:15px;
+}
+button{
+  padding:10px 15px;
+  border:none;
+  border-radius:6px;
+  background:linear-gradient(45deg,#06b6d4,#3b82f6);
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+button:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 15px #00eaff;
+}
+iframe{
+  width:95%;
+  max-width:900px;
+  height:500px;
+  border:2px solid #00eaff;
+  border-radius:8px;
+}
+#status{
+  margin:10px;
+  font-size:14px;
+  color:#facc15;
+}
+</style>
+</head>
+<body>
+
+<h1>🇷🇼 Rwanda TV Live Portal</h1>
+
+<div class="channels">
+
+<button onclick="loadChannel('UCWJ2lWNubArHWmf3FIHbfcQ')">Rwanda TV</button>
+<button onclick="loadChannel('TV10_CHANNEL_ID')">TV10</button>
+<button onclick="loadChannel('ISANGO_CHANNEL_ID')">Isango TV</button>
+<button onclick="loadChannel('BTN_CHANNEL_ID')">BTN TV</button>
+<button onclick="loadChannel('KC2_CHANNEL_ID')">KC2</button>
+<button onclick="loadChannel('BPLUS_CHANNEL_ID')">B+ TV</button>
+<button onclick="loadChannel('ISIBO_CHANNEL_ID')">Isibo TV</button>
+
+</div>
+
+<div id="status">Select a channel</div>
+
+<iframe id="player"
+allow="autoplay; encrypted-media"
+allowfullscreen>
+</iframe>
+
+<script>
+function loadChannel(channelId){
+  const player = document.getElementById("player");
+  const status = document.getElementById("status");
+
+  if(channelId.includes("CHANNEL_ID")){
+    status.innerText = "⚠ Channel ID not configured.";
+    return;
+  }
+
+  player.src = `https://www.youtube.com/embed/live_stream?channel=${channelId}&autoplay=1`;
+  status.innerText = "🔴 Trying to load live stream...";
+}
+</script>
+
+</body>
+</html>

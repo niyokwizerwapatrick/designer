@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyberpunk Chat Simulator</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0f172a;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
+}
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:-1;
+}
+.container{
+  background:#111827;
+  padding:20px;
+  border-radius:12px;
+  width:400px;
+  box-shadow:0 0 40px #00f5ff88;
+}
+h2{
+  text-align:center;
+  color:#00f5ff;
+  margin-bottom:15px;
+}
+.chat-box{
+  background:#1f2937;
+  height:300px;
+  overflow-y:auto;
+  border-radius:8px;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+}
+.message{
+  margin:5px 0;
+  padding:8px;
+  border-radius:6px;
+  max-width:80%;
+  word-wrap: break-word;
+  position:relative;
+  transition: 0.3s all;
+  box-shadow: 0 0 10px rgba(0,255,255,0.5);
+}
+.user{ background:#3b82f6; align-self:flex-end; }
+.other{ background:#facc15; color:black; align-self:flex-start; }
+input, button{
+  width:100%;
+  margin:8px 0;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  font-size:16px;
+}
+input{ background:#1f2937; color:white; }
+button{ background:#00f5ff; color:black; cursor:pointer; transition:0.3s; }
+button:hover{ background:#06b6d4; }
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="container">
+  <h2>Cyberpunk Chat</h2>
+  <div class="chat-box" id="chatBox"></div>
+  <input type="text" id="username" placeholder="Enter your name">
+  <input type="text" id="message" placeholder="Type message...">
+  <button id="sendBtn">Send</button>
+</div>
+
+<script>
+// Chat logic
+const chatBox = document.getElementById("chatBox");
+const sendBtn = document.getElementById("sendBtn");
+const usernameInput = document.getElementById("username");
+const messageInput = document.getElementById("message");
+
+const simulatedUsers = ["Alice","Bob","Charlie","Dana","Eve"];
+
+function appendMessage(content, sender){
+  const msg = document.createElement("div");
+  msg.classList.add("message", sender);
+  msg.textContent = content;
+  chatBox.appendChild(msg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  // Glow trail effect
+  msg.style.boxShadow = "0 0 20px #00ffff";
+  setTimeout(()=>{ msg.style.boxShadow = "0 0 10px rgba(0,255,255,0.5)"; }, 500);
+}
+
+// Send user message
+function sendMessage(){
+  const user = usernameInput.value.trim() || "You";
+  const msg = messageInput.value.trim();
+  if(!msg) return;
+  appendMessage(`${user}: ${msg}`, "user");
+  messageInput.value = "";
+
+  // Simulate other users replying
+  setTimeout(()=>{
+    const randomUser = simulatedUsers[Math.floor(Math.random()*simulatedUsers.length)];
+    const responses = [
+      "Interesting!",
+      "I totally agree.",
+      "Can you explain more?",
+      "😂 That's funny!",
+      "Wow, nice idea!",
+      "Hmm..."
+    ];
+    const reply = responses[Math.floor(Math.random()*responses.length)];
+    appendMessage(`${randomUser}: ${reply}`, "other");
+  }, 800 + Math.random()*1200);
+}
+
+sendBtn.addEventListener("click", sendMessage);
+messageInput.addEventListener("keypress", (e)=>{
+  if(e.key === "Enter") sendMessage();
+});
+
+// Neon particle background
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+window.addEventListener("resize", ()=>{
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+class Particle{
+  constructor(){
+    this.x = Math.random()*canvas.width;
+    this.y = Math.random()*canvas.height;
+    this.size = Math.random()*3+1;
+    this.speedX = (Math.random()-0.5)*1.5;
+    this.speedY = (Math.random()-0.5)*1.5;
+    this.color = "cyan";
+  }
+  update(){
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if(this.x<0||this.x>canvas.width) this.speedX*=-1;
+    if(this.y<0||this.y>canvas.height) this.speedY*=-1;
+  }
+  draw(){
+    ctx.shadowBlur=15;
+    ctx.shadowColor=this.color;
+    ctx.fillStyle=this.color;
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.fill();
+    ctx.shadowBlur=0;
+  }
+}
+
+let particlesArr=[];
+for(let i=0;i<80;i++) particlesArr.push(new Particle());
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particlesArr.forEach(p=>{
+    p.update();
+    p.draw();
+  });
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>

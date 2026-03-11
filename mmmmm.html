@@ -1,0 +1,200 @@
+S<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>patrickc niyokwizerwa | Portfolio</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:radial-gradient(circle at center,#0f172a,#020617);
+  color:white;
+  overflow-x:hidden;
+}
+
+header{
+  text-align:center;
+  padding:100px 20px;
+  position:relative;
+}
+
+h1{
+  font-size:60px;
+  color:#00f5ff;
+  text-shadow:0 0 20px #00f5ff;
+}
+
+p{
+  color:#aaa;
+  max-width:600px;
+  margin:auto;
+}
+
+section{
+  padding:80px 20px;
+  text-align:center;
+}
+
+.card{
+  display:inline-block;
+  background:#111827;
+  padding:30px;
+  margin:20px;
+  border-radius:12px;
+  box-shadow:0 0 20px #00f5ff33;
+  transition:0.3s;
+}
+.card:hover{
+  transform:translateY(-10px);
+  box-shadow:0 0 30px #00f5ff;
+}
+
+button{
+  padding:15px 35px;
+  border:none;
+  border-radius:10px;
+  background:#00f5ff;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 0 20px #00f5ff;
+}
+
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  pointer-events:none;
+  z-index:-1;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<header>
+  <h1>patrickc niyokwizerwa</h1>
+  <p>Creative Developer | Cyberpunk UI Designer | JavaScript Enthusiast</p>
+  <br>
+  <button id="energyBtn">ACTIVATE ENERGY</button>
+</header>
+
+<section>
+  <h2>About Me</h2>
+  <p>I build interactive web experiences with modern animations and physics engines.</p>
+</section>
+
+<section>
+  <h2>Projects</h2>
+  <div class="card">🌐 Interactive Web Apps</div>
+  <div class="card">🎮 Mini JavaScript Games</div>
+  <div class="card">⚡ Advanced UI Animations</div>
+</section>
+
+<section>
+  <h2>Contact</h2>
+  <p>Email: patrick@example.com</p>
+</section>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const btn = document.getElementById("energyBtn");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+window.addEventListener("resize",()=>{
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+class Particle{
+  constructor(x,y){
+    this.x = x;
+    this.y = y;
+    this.size = Math.random()*4+2;
+    this.speedX = (Math.random()-0.5)*8;
+    this.speedY = (Math.random()-0.5)*8;
+    this.gravity = 0.3;
+    this.friction = 0.98;
+    this.life = 120;
+    this.color = "cyan";
+  }
+
+  update(){
+    this.speedY += this.gravity;
+    this.speedX *= this.friction;
+    this.speedY *= this.friction;
+
+    this.x += this.speedX;
+    this.y += this.speedY;
+
+    if(this.y > canvas.height - this.size){
+      this.y = canvas.height - this.size;
+      this.speedY *= -0.7;
+    }
+
+    this.life--;
+  }
+
+  draw(){
+    ctx.globalAlpha = this.life/120;
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = this.color;
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+  }
+}
+
+let particles = [];
+
+function animate(){
+  ctx.fillStyle = "rgba(0,0,0,0.2)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach((p,index)=>{
+    p.update();
+    p.draw();
+    if(p.life<=0){
+      particles.splice(index,1);
+    }
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+// Trail effect
+function createTrail(){
+  let rect = btn.getBoundingClientRect();
+  particles.push(new Particle(
+    rect.left + rect.width/2,
+    rect.top + rect.height/2
+  ));
+}
+
+setInterval(createTrail, 100);
+
+// Explosion
+btn.addEventListener("click",()=>{
+  let rect = btn.getBoundingClientRect();
+  let x = rect.left + rect.width/2;
+  let y = rect.top + rect.height/2;
+
+  for(let i=0;i<150;i++){
+    particles.push(new Particle(x,y));
+  }
+});
+</script>
+
+</body>
+</html>
